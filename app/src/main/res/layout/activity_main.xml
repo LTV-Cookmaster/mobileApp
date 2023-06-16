@@ -75,7 +75,6 @@
             android:backgroundTint="#0C610C"
             android:textColor="#FFFFFF"/>
 
-
     </LinearLayout>
 
 </RelativeLayout>
