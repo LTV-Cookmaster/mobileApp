@@ -11,4 +11,5 @@
     <color name="red">#FF0000</color>
     <color name="colorPrimaryDark">#43A047</color>
     <color name="colorPrimaryVariant">#43A047</color>
+    <color name="gray_anthracite">#383E42</color>
 </resources>
