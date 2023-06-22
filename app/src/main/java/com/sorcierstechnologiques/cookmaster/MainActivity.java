@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(email.getText().toString().equals("ratio") && password.getText().toString().equals("ratio")){
-                    Intent logged = new Intent(MainActivity.this, HomeActivity.class);
+                    Intent logged = new Intent(MainActivity.this, StudentActivity.class);
                     MainActivity.this.startActivity(logged);
                 } else {
                     error.setText("Email ou mot de passe incorrect");
