@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Cookmaster</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_fidelity">Fidelity</string>
+    <string name="title_events">Mes evenements</string>
+</resources>
