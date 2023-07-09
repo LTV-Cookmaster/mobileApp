@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -33,7 +35,7 @@ import java.util.List;
 public class EventsFragment extends Fragment {
 
     private FragmentEventsBinding binding;
-    private TextView tv1;
+    private EditText tv1;
     public ListView lv;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -44,44 +46,42 @@ public class EventsFragment extends Fragment {
         binding = FragmentEventsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        tv1 = (TextView) root.findViewById(R.id.tv1);
+        tv1 = root.findViewById(R.id.tv1);
         lv = root.findViewById(R.id.lv);
 
         RequestQueue queue = Volley.newRequestQueue(requireContext());
-        String url = "https://pokeapi.co/api/v2/pokemon/pikachu";
+        String url = "https://cockmaster.fr/api/reservation/ee475781-16ac-3e98-96ef-afb9285da20a";
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
                         try {
-                            // Traitement des données JSON ici
-                            // Par exemple, vous pouvez extraire des valeurs spécifiques du JSON
-                            String name = response.getString("name");
-                            lv = root.findViewById(R.id.lv);
-                            EventsAdapter eadap = new EventsAdapter(getEvents(response), requireContext());
-                            lv.setAdapter(eadap);
-                            // ...
-
+                            JSONArray eventsArray = response.getJSONArray(0).getJSONArray(0).getJSONArray(0);
+                            if (eventsArray.length() > 0) {
+                                List<Events> eventsList = getEvents(eventsArray);
+                                EventsAdapter eventsAdapter = new EventsAdapter(eventsList, requireContext());
+                                lv.setAdapter(eventsAdapter);
+                            } else {
+                                tv1.setText("Vous n'avez aucune réservation");
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            tv1.setText(e.getMessage());
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // Gestion des erreurs de la requête
-                        // Affichez un message d'erreur approprié ou effectuez d'autres actions
                         error.printStackTrace();
                         tv1.setText(error.getMessage());
                     }
                 });
 
+
 // Ajout de la requête à la file d'attente
-        queue.add(jsonObjectRequest);
-
-
+        queue.add(jsonArrayRequest);
 
 
 
@@ -96,10 +96,9 @@ public class EventsFragment extends Fragment {
         binding = null;
     }
 
-    public List<Events> getEvents(JSONObject response) {
+    public List<Events> getEvents(JSONArray eventsArray) {
         List<Events> resultat = new ArrayList<>();
         try {
-            JSONArray eventsArray = response.getJSONArray("events"); // Supposons que les événements soient contenus dans un tableau JSON appelé "events"
             for (int i = 0; i < eventsArray.length(); i++) {
                 JSONObject eventObject = eventsArray.getJSONObject(i);
                 String name = eventObject.getString("name");
@@ -112,8 +111,12 @@ public class EventsFragment extends Fragment {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            tv1.setText(e.getMessage());
         }
         return resultat;
     }
+
+
+
 
 }
