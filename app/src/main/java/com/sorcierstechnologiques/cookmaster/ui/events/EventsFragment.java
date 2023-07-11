@@ -77,31 +77,19 @@ public class EventsFragment extends Fragment {
                                     @Override
                                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                                         Events e = (Events) adapterView.getItemAtPosition(position);
-
-                                        // Inflater le layout de la popup
                                         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                                         View popupView = inflater.inflate(R.layout.popup_layout, null);
-
-                                        // Récupérer les références des TextView dans le layout de la popup
                                         TextView nameTextView = popupView.findViewById(R.id.name);
                                         TextView dateTextView = popupView.findViewById(R.id.date);
                                         TextView hourTextView = popupView.findViewById(R.id.hour);
                                         TextView descriptionTextView = popupView.findViewById(R.id.description);
-
-                                        // Mettre à jour les TextView avec les données de l'événement sélectionné
                                         nameTextView.setText(e.getName());
                                         dateTextView.setText(e.getStart_date());
                                         hourTextView.setText(e.getStart_time() + " - " + e.getEnd_time());
                                         descriptionTextView.setText(e.getAddress());
-
-                                        // Créer une instance de PopupWindow
                                         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-
-                                        // Configurer les propriétés de la popup
                                         popupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
                                         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-                                        // Fermer la popup lorsqu'on clique n'importe où en dehors d'elle
                                         popupView.setOnTouchListener(new View.OnTouchListener() {
                                             @Override
                                             public boolean onTouch(View v, MotionEvent event) {
@@ -132,7 +120,6 @@ public class EventsFragment extends Fragment {
                 });
 
 
-// Ajout de la requête à la file d'attente
         queue.add(jsonObjectRequest);
 
         final TextView textView = binding.textEvents;

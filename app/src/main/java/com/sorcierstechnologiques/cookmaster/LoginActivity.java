@@ -46,7 +46,9 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.emailEditText);
         password = findViewById(R.id.passwordEditText);
         errorText = findViewById(R.id.textError);
+/*
         tv1 = findViewById(R.id.tv1);
+*/
 
         this.loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
                 String passwordText = password.getText().toString();
                 RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
                 String url = "https://cockmaster.fr/api/login";
-                // Create body request
                 JSONObject jsonBody = new JSONObject();
                 String requestBody;
                 try {
