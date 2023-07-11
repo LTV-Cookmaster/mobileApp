@@ -1,5 +1,7 @@
 package com.sorcierstechnologiques.cookmaster.ui.events;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,16 +50,19 @@ public class EventsFragment extends Fragment {
 
         tv1 = root.findViewById(R.id.tv1);
         lv = root.findViewById(R.id.lv);
-
+        SharedPreferences settings = getActivity().getSharedPreferences("users", Context.MODE_PRIVATE);
+        String token = settings.getString("token", "");
+        String userId = settings.getString("user_id", "");
         RequestQueue queue = Volley.newRequestQueue(requireContext());
-        String url = "https://cockmaster.fr/api/mobile/reservation/ee475781-16ac-3e98-96ef-afb9285da20a";
+        String url = "https://cockmaster.fr/api/mobile/reservation/" + userId + "/" + token;
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(JSONObject response) {
                         try {
-                            JSONArray eventsArray = response.getJSONArray(0).getJSONArray(0).getJSONArray(0);
+                            JSONArray eventsArray = response.getJSONArray("events").getJSONArray(0);
                             if (eventsArray.length() > 0) {
                                 List<Events> eventsList = getEvents(eventsArray);
                                 EventsAdapter eventsAdapter = new EventsAdapter(eventsList, requireContext());
@@ -81,7 +86,7 @@ public class EventsFragment extends Fragment {
 
 
 // Ajout de la requête à la file d'attente
-        queue.add(jsonArrayRequest);
+        queue.add(jsonObjectRequest);
 
 
 
@@ -105,7 +110,7 @@ public class EventsFragment extends Fragment {
                 String start_date = eventObject.getString("start_date");
                 String start_time = eventObject.getString("start_time");
                 String end_time = eventObject.getString("end_time");
-                String address = eventObject.getString("address");
+                String address = eventObject.getString("description");
                 Events event = new Events(name, start_date, start_time, end_time, address);
                 resultat.add(event);
             }
