@@ -50,7 +50,7 @@ public class EventsFragment extends Fragment {
         lv = root.findViewById(R.id.lv);
 
         RequestQueue queue = Volley.newRequestQueue(requireContext());
-        String url = "https://cockmaster.fr/api/reservation/ee475781-16ac-3e98-96ef-afb9285da20a";
+        String url = "https://cockmaster.fr/api/mobile/reservation/ee475781-16ac-3e98-96ef-afb9285da20a";
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {
