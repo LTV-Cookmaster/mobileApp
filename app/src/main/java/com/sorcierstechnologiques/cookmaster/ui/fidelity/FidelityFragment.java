@@ -41,7 +41,6 @@ public class FidelityFragment extends Fragment {
 
         fidelityViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        // Générer le code QR et l'afficher
         generateQRCode();
 
         return root;
@@ -59,10 +58,7 @@ public class FidelityFragment extends Fragment {
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         try {
-            // Générer la matrice de bits du code QR
             BitMatrix bitMatrix = qrCodeWriter.encode(userId, BarcodeFormat.QR_CODE, 200, 200);
-
-            // Convertir la matrice de bits en image Bitmap
             int width = bitMatrix.getWidth();
             int height = bitMatrix.getHeight();
             Bitmap qrBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
@@ -71,8 +67,6 @@ public class FidelityFragment extends Fragment {
                     qrBitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
                 }
             }
-
-            // Afficher l'image du code QR dans l'ImageView
             qrImageView.setImageBitmap(qrBitmap);
 
         } catch (WriterException e) {
