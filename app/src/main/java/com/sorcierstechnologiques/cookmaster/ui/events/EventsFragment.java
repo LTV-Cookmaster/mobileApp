@@ -3,12 +3,15 @@ package com.sorcierstechnologiques.cookmaster.ui.events;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +40,7 @@ import java.util.List;
 public class EventsFragment extends Fragment {
 
     private FragmentEventsBinding binding;
-    private EditText tv1;
+    private TextView tv1;
     public ListView lv;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -62,11 +65,55 @@ public class EventsFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONArray eventsArray = response.getJSONArray("events").getJSONArray(0);
-                            if (eventsArray.length() > 0) {
-                                List<Events> eventsList = getEvents(eventsArray);
+                            JSONArray eventsArray = response.getJSONArray("events");
+                            List<Events> eventsList = new ArrayList<>();
+                            for (int i = 0; i < eventsArray.length(); i++) {
+                                eventsList.addAll(getEvents(eventsArray.getJSONArray(i)));
+                            }
+                            if (eventsList.size() > 0) {
                                 EventsAdapter eventsAdapter = new EventsAdapter(eventsList, requireContext());
                                 lv.setAdapter(eventsAdapter);
+                                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                                        Events e = (Events) adapterView.getItemAtPosition(position);
+
+                                        // Inflater le layout de la popup
+                                        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                        View popupView = inflater.inflate(R.layout.popup_layout, null);
+
+                                        // Récupérer les références des TextView dans le layout de la popup
+                                        TextView nameTextView = popupView.findViewById(R.id.name);
+                                        TextView dateTextView = popupView.findViewById(R.id.date);
+                                        TextView hourTextView = popupView.findViewById(R.id.hour);
+                                        TextView descriptionTextView = popupView.findViewById(R.id.description);
+
+                                        // Mettre à jour les TextView avec les données de l'événement sélectionné
+                                        nameTextView.setText(e.getName());
+                                        dateTextView.setText(e.getStart_date());
+                                        hourTextView.setText(e.getStart_time() + " - " + e.getEnd_time());
+                                        descriptionTextView.setText(e.getAddress());
+
+                                        // Créer une instance de PopupWindow
+                                        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+                                        // Configurer les propriétés de la popup
+                                        popupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
+                                        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+                                        // Fermer la popup lorsqu'on clique n'importe où en dehors d'elle
+                                        popupView.setOnTouchListener(new View.OnTouchListener() {
+                                            @Override
+                                            public boolean onTouch(View v, MotionEvent event) {
+                                                if (popupWindow.isShowing()) {
+                                                    popupWindow.dismiss();
+                                                }
+                                                return true;
+                                            }
+                                        });
+                                    }
+
+                                });
                             } else {
                                 tv1.setText("Vous n'avez aucune réservation");
                             }
@@ -87,8 +134,6 @@ public class EventsFragment extends Fragment {
 
 // Ajout de la requête à la file d'attente
         queue.add(jsonObjectRequest);
-
-
 
         final TextView textView = binding.textEvents;
         notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
